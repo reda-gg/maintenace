@@ -1,0 +1,2257 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Maintenance Prédictive - Solution Industrielle</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+    />
+    <style>
+      :root {
+        --primary-color: #3498db;
+        --secondary-color: #2c3e50;
+        --accent-color: #e74c3c;
+        --light-color: #ecf0f1;
+        --dark-color: #2c3e50;
+        --success-color: #2ecc71;
+        --warning-color: #f39c12;
+        --danger-color: #e74c3c;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        line-height: 1.6;
+        color: #333;
+        overflow-x: hidden;
+      }
+
+      .container {
+        width: 90%;
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 20px;
+      }
+
+      /* Navigation */
+      nav {
+        background: white;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        position: fixed;
+        width: 100%;
+        top: 0;
+        z-index: 1000;
+        transition: all 0.3s ease;
+      }
+
+      nav.scrolled {
+        background: rgba(255, 255, 255, 0.95);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+      }
+
+      nav .container {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1rem 20px;
+      }
+
+      .logo h1 {
+        font-size: 1.8rem;
+        color: var(--secondary-color);
+      }
+
+      .logo h1 span {
+        color: var(--primary-color);
+      }
+
+      .nav-links {
+        display: flex;
+        list-style: none;
+      }
+
+      .nav-links li {
+        margin-left: 2rem;
+      }
+
+      .nav-links a {
+        color: var(--secondary-color);
+        font-weight: 500;
+        transition: color 0.3s ease;
+        position: relative;
+      }
+
+      .nav-links a:hover {
+        color: var(--primary-color);
+      }
+
+      .nav-links a::after {
+        content: "";
+        position: absolute;
+        width: 0;
+        height: 2px;
+        background: var(--primary-color);
+        bottom: -5px;
+        left: 0;
+        transition: width 0.3s ease;
+      }
+
+      .nav-links a:hover::after {
+        width: 100%;
+      }
+
+      .nav-links a.active {
+        color: var(--primary-color);
+        font-weight: 600;
+      }
+
+      .nav-links a.active::after {
+        width: 100%;
+      }
+
+      .burger {
+        display: none;
+        cursor: pointer;
+      }
+
+      .burger div {
+        width: 25px;
+        height: 3px;
+        background: var(--secondary-color);
+        margin: 5px;
+        transition: all 0.3s ease;
+      }
+
+      /* Page Styles */
+      .page {
+        display: none;
+        padding: 6rem 0 3rem;
+        min-height: 100vh;
+      }
+
+      .page.active {
+        display: block;
+      }
+
+      .section-title {
+        text-align: center;
+        margin-bottom: 3rem;
+        font-size: 2.5rem;
+        color: var(--secondary-color);
+        position: relative;
+      }
+
+      .section-title::after {
+        content: "";
+        display: block;
+        width: 80px;
+        height: 4px;
+        background: var(--primary-color);
+        margin: 0.5rem auto;
+      }
+
+      .btn {
+        display: inline-block;
+        background: var(--primary-color);
+        color: white;
+        padding: 0.8rem 1.8rem;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+      }
+
+      .btn:hover {
+        background: var(--secondary-color);
+        transform: translateY(-3px);
+      }
+
+      .back-btn {
+        background: var(--secondary-color);
+        color: white;
+        border: none;
+        padding: 0.8rem 1.5rem;
+        border-radius: 5px;
+        cursor: pointer;
+        margin-bottom: 2rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        transition: all 0.3s ease;
+      }
+
+      .back-btn:hover {
+        background: var(--primary-color);
+        transform: translateX(-5px);
+      }
+
+      /* Home Page */
+      #home-page {
+        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+      }
+
+      .hero {
+        display: flex;
+        align-items: center;
+        height: calc(100vh - 80px);
+      }
+
+      .hero .container {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+
+      .hero-content {
+        flex: 1;
+        padding-right: 2rem;
+      }
+
+      .hero-content h2 {
+        font-size: 3rem;
+        color: var(--secondary-color);
+        margin-bottom: 1.5rem;
+      }
+
+      .hero-content p {
+        font-size: 1.2rem;
+        color: #555;
+        margin-bottom: 2rem;
+        max-width: 600px;
+      }
+
+      .hero-image {
+        flex: 1;
+        text-align: center;
+      }
+
+      .hero-image img {
+        max-width: 100%;
+        height: auto;
+        border-radius: 10px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        transition: transform 0.5s ease;
+      }
+
+      .hero-image img:hover {
+        transform: scale(1.03);
+      }
+
+      /* Pipeline Page */
+      .pipeline-steps {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 2rem;
+        margin-top: 3rem;
+      }
+
+      .step {
+        background: white;
+        padding: 2rem;
+        border-radius: 10px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        text-align: center;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        cursor: pointer;
+      }
+
+      .step:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+      }
+
+      .step-icon {
+        width: 80px;
+        height: 80px;
+        background: var(--primary-color);
+        color: white;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 1.5rem;
+        font-size: 2rem;
+      }
+
+      .step h3 {
+        color: var(--secondary-color);
+        margin-bottom: 1rem;
+      }
+
+      /* Data Collection Page */
+      .data-collection-content,
+      .data-cleaning-content,
+      .analysis-content,
+      .alerts-content {
+        display: flex;
+        gap: 3rem;
+        margin-top: 2rem;
+      }
+
+      .data-collection-text,
+      .cleaning-process,
+      .analysis-process,
+      .alerts-process {
+        flex: 1;
+      }
+
+      .data-collection-text h3,
+      .cleaning-process h3,
+      .analysis-process h3,
+      .alerts-process h3 {
+        color: var(--secondary-color);
+        margin-bottom: 1.5rem;
+        font-size: 1.8rem;
+      }
+
+      .data-collection-text ul,
+      .cleaning-process ul,
+      .analysis-process ul,
+      .alerts-process ul {
+        list-style: none;
+        margin: 2rem 0;
+      }
+
+      .data-collection-text ul li,
+      .cleaning-process ul li,
+      .analysis-process ul li,
+      .alerts-process ul li {
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 0.8rem;
+        font-size: 1.1rem;
+      }
+
+      .data-collection-text ul li i,
+      .cleaning-process ul li i,
+      .analysis-process ul li i,
+      .alerts-process ul li i {
+        color: var(--primary-color);
+      }
+
+      .data-stats,
+      .quality-metrics,
+      .model-metrics,
+      .alert-stats {
+        display: flex;
+        gap: 2rem;
+        margin: 3rem 0;
+      }
+
+      .stat-item,
+      .metric,
+      .model-metric,
+      .alert-stat {
+        text-align: center;
+        background: #f8f9fa;
+        padding: 1.5rem 1rem;
+        border-radius: 10px;
+        flex: 1;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+      }
+
+      .stat-value,
+      .metric-value,
+      .model-value,
+      .alert-value {
+        font-size: 2.5rem;
+        font-weight: bold;
+        color: var(--primary-color);
+        margin-bottom: 0.5rem;
+      }
+
+      .stat-label,
+      .metric-label,
+      .model-label,
+      .alert-label {
+        color: var(--secondary-color);
+        font-size: 1rem;
+      }
+
+      .data-collection-visual,
+      .cleaning-visual,
+      .analysis-visual,
+      .alerts-visual {
+        flex: 1;
+      }
+
+      .data-flow-animation,
+      .cleaning-flow-animation,
+      .analysis-flow-animation,
+      .alerts-flow-animation {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 3rem;
+        position: relative;
+      }
+
+      .sensor-node,
+      .gateway-node,
+      .cloud-node,
+      .raw-node,
+      .clean-node,
+      .processed-node,
+      .data-node,
+      .model-node,
+      .prediction-node,
+      .alert-node,
+      .action-node,
+      .resolution-node {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.5rem;
+        z-index: 2;
+      }
+
+      .sensor-node i,
+      .gateway-node i,
+      .cloud-node i,
+      .raw-node i,
+      .clean-node i,
+      .processed-node i,
+      .data-node i,
+      .model-node i,
+      .prediction-node i,
+      .alert-node i,
+      .action-node i,
+      .resolution-node i {
+        width: 60px;
+        height: 60px;
+        background: var(--primary-color);
+        color: white;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+      }
+
+      .data-line,
+      .cleaning-line,
+      .analysis-line,
+      .alerts-line {
+        height: 3px;
+        background: var(--primary-color);
+        flex: 1;
+        position: relative;
+        opacity: 0.5;
+      }
+
+      .data-line::after,
+      .cleaning-line::after,
+      .analysis-line::after,
+      .alerts-line::after {
+        content: "";
+        position: absolute;
+        width: 15px;
+        height: 15px;
+        background: var(--primary-color);
+        border-radius: 50%;
+        top: 50%;
+        left: 0;
+        transform: translateY(-50%);
+        animation: dataFlow 2s infinite linear;
+      }
+
+      @keyframes dataFlow {
+        0% {
+          left: 0;
+          opacity: 0;
+        }
+        50% {
+          opacity: 1;
+        }
+        100% {
+          left: 100%;
+          opacity: 0;
+        }
+      }
+
+      .realtime-data-feed,
+      .cleaning-log,
+      .model-performance,
+      .alerts-feed {
+        background: #f8f9fa;
+        border-radius: 10px;
+        padding: 1.5rem;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+      }
+
+      .realtime-data-feed h4,
+      .cleaning-log h4,
+      .model-performance h4,
+      .alerts-feed h4 {
+        color: var(--secondary-color);
+        margin-bottom: 1rem;
+        border-bottom: 1px solid #ddd;
+        padding-bottom: 0.5rem;
+      }
+
+      .data-feed-container,
+      .cleaning-log-container,
+      .model-performance-container,
+      .alerts-container {
+        height: 300px;
+        overflow-y: auto;
+        font-family: "Courier New", monospace;
+        background: #2c3e50;
+        color: #ecf0f1;
+        padding: 1rem;
+        border-radius: 5px;
+      }
+
+      .data-feed-item,
+      .cleaning-log-item,
+      .model-performance-item,
+      .alert-item {
+        margin-bottom: 0.5rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        font-size: 0.9rem;
+      }
+
+      .data-feed-item::before,
+      .cleaning-log-item::before,
+      .model-performance-item::before,
+      .alert-item::before {
+        content: "> ";
+        color: var(--success-color);
+      }
+
+      /* Process Steps */
+      .process-steps {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 2rem;
+        margin: 2rem 0;
+      }
+
+      .process-step {
+        background: white;
+        padding: 1.5rem;
+        border-radius: 10px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        text-align: center;
+        transition: transform 0.3s ease;
+      }
+
+      .process-step:hover {
+        transform: translateY(-5px);
+      }
+
+      .process-step i {
+        font-size: 2rem;
+        color: var(--primary-color);
+        margin-bottom: 1rem;
+      }
+
+      .process-step h4 {
+        color: var(--secondary-color);
+        margin-bottom: 0.5rem;
+      }
+
+      /* Model Visualization */
+      .model-visualization {
+        background: white;
+        border-radius: 10px;
+        padding: 2rem;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        margin-bottom: 2rem;
+      }
+
+      .model-graph {
+        height: 300px;
+        background: #f8f9fa;
+        border-radius: 5px;
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-around;
+        padding: 1rem;
+      }
+
+      .model-bar {
+        width: 40px;
+        background: var(--primary-color);
+        border-radius: 3px 3px 0 0;
+        transition: height 1s ease;
+        position: relative;
+      }
+
+      .model-bar::after {
+        content: attr(data-value);
+        position: absolute;
+        top: -25px;
+        left: 50%;
+        transform: translateX(-50%);
+        font-size: 0.8rem;
+      }
+
+      /* Dashboard Page */
+      .dashboard-container {
+        display: flex;
+        align-items: center;
+        gap: 3rem;
+        margin-top: 3rem;
+      }
+
+      .dashboard-description {
+        flex: 1;
+      }
+
+      .dashboard-description h3 {
+        font-size: 1.8rem;
+        color: var(--secondary-color);
+        margin-bottom: 1.5rem;
+      }
+
+      .dashboard-description ul {
+        list-style: none;
+        margin: 2rem 0;
+      }
+
+      .dashboard-description ul li {
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+      }
+
+      .dashboard-description ul li i {
+        color: var(--success-color);
+        margin-right: 0.8rem;
+        font-size: 1.2rem;
+      }
+
+      .dashboard-preview {
+        flex: 1;
+      }
+
+      .dashboard-mockup {
+        background: white;
+        border-radius: 10px;
+        padding: 2rem;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1.5rem;
+      }
+
+      .gauge-container {
+        text-align: center;
+      }
+
+      .gauge {
+        width: 120px;
+        height: 120px;
+        border-radius: 50%;
+        background: conic-gradient(
+          var(--success-color) 0% 70%,
+          var(--warning-color) 70% 85%,
+          var(--danger-color) 85% 100%
+        );
+        margin: 0 auto;
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .gauge::before {
+        content: "";
+        position: absolute;
+        width: 80px;
+        height: 80px;
+        background: white;
+        border-radius: 50%;
+      }
+
+      .gauge-container p {
+        margin-top: 0.8rem;
+        font-weight: 500;
+      }
+
+      .alert-panel {
+        grid-column: span 2;
+        background: #f8f9fa;
+        border-radius: 8px;
+        padding: 1.5rem;
+      }
+
+      .alert-panel h4 {
+        color: var(--secondary-color);
+        margin-bottom: 1rem;
+        border-bottom: 1px solid #ddd;
+        padding-bottom: 0.5rem;
+      }
+
+      .alert-panel ul {
+        list-style: none;
+      }
+
+      .alert-panel ul li {
+        padding: 0.5rem 0;
+        border-bottom: 1px solid #eee;
+        display: flex;
+        align-items: center;
+      }
+
+      .alert-panel ul li::before {
+        content: "•";
+        color: var(--danger-color);
+        font-weight: bold;
+        margin-right: 0.5rem;
+      }
+
+      /* Contact Page */
+      .contact-container {
+        display: flex;
+        gap: 3rem;
+        margin-top: 3rem;
+      }
+
+      .contact-info {
+        flex: 1;
+        background: white;
+        padding: 2rem;
+        border-radius: 10px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+      }
+
+      .contact-info h3 {
+        color: var(--secondary-color);
+        margin-bottom: 1.5rem;
+      }
+
+      .contact-info p {
+        margin-bottom: 1.5rem;
+        display: flex;
+        align-items: center;
+      }
+
+      .contact-info i {
+        margin-right: 1rem;
+        color: var(--primary-color);
+        width: 20px;
+        text-align: center;
+      }
+
+      .social-links {
+        display: flex;
+        gap: 1rem;
+        margin-top: 2rem;
+      }
+
+      .social-links a {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 40px;
+        height: 40px;
+        background: var(--primary-color);
+        color: white;
+        border-radius: 50%;
+        transition: all 0.3s ease;
+      }
+
+      .social-links a:hover {
+        background: var(--secondary-color);
+        transform: translateY(-3px);
+      }
+
+      .contact-form {
+        flex: 1;
+        background: white;
+        padding: 2rem;
+        border-radius: 10px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+      }
+
+      .form-group {
+        margin-bottom: 1.5rem;
+      }
+
+      .form-group input,
+      .form-group textarea {
+        width: 100%;
+        padding: 0.8rem 1rem;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        font-family: inherit;
+        font-size: 1rem;
+        transition: border 0.3s ease;
+      }
+
+      .form-group input:focus,
+      .form-group textarea:focus {
+        outline: none;
+        border-color: var(--primary-color);
+      }
+
+      .form-group textarea {
+        resize: vertical;
+        min-height: 120px;
+      }
+
+      /* Footer */
+      footer {
+        background: var(--secondary-color);
+        color: white;
+        padding: 3rem 0 0;
+      }
+
+      .footer-content {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 2rem;
+        margin-bottom: 2rem;
+      }
+
+      .footer-logo h3 {
+        color: white;
+        font-size: 1.8rem;
+        margin-bottom: 1rem;
+      }
+
+      .footer-logo h3 span {
+        color: var(--primary-color);
+      }
+
+      .footer-logo p {
+        color: #bbb;
+      }
+
+      .footer-links h4,
+      .footer-legal h4 {
+        color: white;
+        margin-bottom: 1.5rem;
+        font-size: 1.2rem;
+      }
+
+      .footer-links ul,
+      .footer-legal ul {
+        list-style: none;
+      }
+
+      .footer-links li,
+      .footer-legal li {
+        margin-bottom: 0.8rem;
+      }
+
+      .footer-links a,
+      .footer-legal a {
+        color: #bbb;
+        transition: color 0.3s ease;
+      }
+
+      .footer-links a:hover,
+      .footer-legal a:hover {
+        color: white;
+      }
+
+      .copyright {
+        text-align: center;
+        padding: 1.5rem 0;
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+        color: #bbb;
+        font-size: 0.9rem;
+      }
+
+      /* Responsive Design */
+      @media (max-width: 992px) {
+        .hero .container {
+          flex-direction: column;
+          text-align: center;
+        }
+
+        .hero-content {
+          padding-right: 0;
+          margin-bottom: 3rem;
+        }
+
+        .dashboard-container,
+        .contact-container,
+        .data-collection-content,
+        .data-cleaning-content,
+        .analysis-content,
+        .alerts-content {
+          flex-direction: column;
+        }
+
+        .data-stats,
+        .quality-metrics,
+        .model-metrics,
+        .alert-stats {
+          flex-direction: column;
+          gap: 1rem;
+        }
+      }
+
+      @media (max-width: 768px) {
+        .nav-links {
+          position: absolute;
+          right: 0;
+          top: 80px;
+          background: white;
+          width: 100%;
+          flex-direction: column;
+          align-items: center;
+          padding: 2rem 0;
+          box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+          transform: translateY(-150%);
+          transition: transform 0.5s ease-in-out;
+        }
+
+        .nav-links.active {
+          transform: translateY(0);
+        }
+
+        .nav-links li {
+          margin: 1rem 0;
+        }
+
+        .burger {
+          display: block;
+        }
+
+        .hero-content h2 {
+          font-size: 2.5rem;
+        }
+
+        .section-title {
+          font-size: 2rem;
+        }
+
+        .dashboard-mockup {
+          grid-template-columns: 1fr;
+        }
+
+        .alert-panel {
+          grid-column: span 1;
+        }
+      }
+
+      @media (max-width: 576px) {
+        .hero-content h2 {
+          font-size: 2rem;
+        }
+
+        .process-steps {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Navigation -->
+    <nav id="navbar">
+      <div class="container">
+        <div class="logo">
+          <h1><span>AI</span>Maintenance</h1>
+        </div>
+        <ul class="nav-links">
+          <li>
+            <a href="#home" class="nav-link active" data-page="home-page"
+              >Accueil</a
+            >
+          </li>
+          <li>
+            <a href="#pipeline" class="nav-link" data-page="pipeline-page"
+              >Pipeline</a
+            >
+          </li>
+          <li>
+            <a href="#dashboard" class="nav-link" data-page="dashboard-page"
+              >Tableau de Bord</a
+            >
+          </li>
+          <li>
+            <a href="#contact" class="nav-link" data-page="contact-page"
+              >Contact & Démo</a
+            >
+          </li>
+        </ul>
+        <div class="burger">
+          <div class="line1"></div>
+          <div class="line2"></div>
+          <div class="line3"></div>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Pages Container -->
+    <div id="pages-container">
+      <!-- Home Page -->
+      <section id="home-page" class="page active">
+        <div class="container">
+          <div class="hero">
+            <div class="hero-content">
+              <h2>Optimisez votre maintenance industrielle avec l'IA</h2>
+              <p>
+                Notre solution de maintenance prédictive réduit les temps
+                d'arrêt et augmente l'efficacité de vos équipements.
+              </p>
+              <a href="#contact" class="btn nav-link" data-page="contact-page"
+                >Demander une démo</a
+              >
+            </div>
+            <div class="hero-image">
+              <img
+                src="https://via.placeholder.com/600x400"
+                alt="Maintenance prédictive IA"
+                id="hero-img"
+              />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Pipeline Page -->
+      <section id="pipeline-page" class="page">
+        <div class="container">
+          <h2 class="section-title">
+            Notre Pipeline de Maintenance Prédictive
+          </h2>
+          <div class="pipeline-steps">
+            <div class="step" data-target="data-collection-page">
+              <div class="step-icon">
+                <i class="fas fa-database"></i>
+              </div>
+              <h3>Collecte des Données</h3>
+              <p>
+                Acquisition en temps réel des données des capteurs et des
+                historiques de maintenance.
+              </p>
+            </div>
+            <div class="step" data-target="data-cleaning-page">
+              <div class="step-icon">
+                <i class="fas fa-broom"></i>
+              </div>
+              <h3>Nettoyage & Préparation</h3>
+              <p>
+                Filtrage des anomalies et préparation des données pour
+                l'analyse.
+              </p>
+            </div>
+            <div class="step" data-target="analysis-page">
+              <div class="step-icon">
+                <i class="fas fa-chart-line"></i>
+              </div>
+              <h3>Analyse & Modélisation</h3>
+              <p>
+                Algorithmes d'apprentissage automatique pour détecter les
+                patterns de défaillance.
+              </p>
+            </div>
+            <div class="step" data-target="alerts-page">
+              <div class="step-icon">
+                <i class="fas fa-bell"></i>
+              </div>
+              <h3>Alertes & Recommandations</h3>
+              <p>
+                Notifications proactives et recommandations d'actions de
+                maintenance.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Data Collection Page -->
+      <section id="data-collection-page" class="page">
+        <div class="container">
+          <button class="back-btn" data-back="pipeline-page">
+            <i class="fas fa-arrow-left"></i> Retour
+          </button>
+
+          <h2 class="section-title">Collecte des Données</h2>
+
+          <div class="data-collection-content">
+            <div class="data-collection-text">
+              <h3>Acquisition en temps réel des données</h3>
+              <p>
+                Notre système collecte en permanence des données provenant de
+                multiples sources :
+              </p>
+              <ul>
+                <li><i class="fas fa-sensor"></i> Capteurs IoT industriels</li>
+                <li>
+                  <i class="fas fa-database"></i> Historiques de maintenance
+                </li>
+                <li><i class="fas fa-server"></i> Systèmes SCADA existants</li>
+                <li><i class="fas fa-cloud"></i> Plateformes cloud</li>
+              </ul>
+              <div class="data-stats">
+                <div class="stat-item">
+                  <div class="stat-value" id="data-volume">0</div>
+                  <div class="stat-label">Go/jour</div>
+                </div>
+                <div class="stat-item">
+                  <div class="stat-value" id="sensor-count">0</div>
+                  <div class="stat-label">Capteurs</div>
+                </div>
+                <div class="stat-item">
+                  <div class="stat-value" id="uptime">0</div>
+                  <div class="stat-label">% Disponibilité</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="data-collection-visual">
+              <div class="data-flow-animation">
+                <div class="sensor-node">
+                  <i class="fas fa-sensor"></i>
+                  <span>Capteur</span>
+                </div>
+                <div class="data-line"></div>
+                <div class="gateway-node">
+                  <i class="fas fa-network-wired"></i>
+                  <span>Gateway</span>
+                </div>
+                <div class="data-line"></div>
+                <div class="cloud-node">
+                  <i class="fas fa-cloud"></i>
+                  <span>Cloud</span>
+                </div>
+              </div>
+
+              <div class="realtime-data-feed">
+                <h4>Flux de données en temps réel</h4>
+                <div class="data-feed-container" id="data-feed">
+                  <!-- Les données seront ajoutées dynamiquement -->
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Data Cleaning Page -->
+      <section id="data-cleaning-page" class="page">
+        <div class="container">
+          <button class="back-btn" data-back="pipeline-page">
+            <i class="fas fa-arrow-left"></i> Retour
+          </button>
+
+          <h2 class="section-title">Nettoyage & Préparation des Données</h2>
+
+          <div class="data-cleaning-content">
+            <div class="cleaning-process">
+              <h3>Notre processus de nettoyage des données</h3>
+              <div class="process-steps">
+                <div class="process-step">
+                  <i class="fas fa-search"></i>
+                  <h4>Détection des anomalies</h4>
+                  <p>
+                    Identification et marquage des valeurs aberrantes dans les
+                    flux de données
+                  </p>
+                </div>
+                <div class="process-step">
+                  <i class="fas fa-filter"></i>
+                  <h4>Filtrage des bruits</h4>
+                  <p>
+                    Application de filtres numériques pour éliminer les
+                    interférences
+                  </p>
+                </div>
+                <div class="process-step">
+                  <i class="fas fa-align-left"></i>
+                  <h4>Normalisation</h4>
+                  <p>Mise à l'échelle des données pour une analyse cohérente</p>
+                </div>
+              </div>
+
+              <h3 style="margin-top: 2rem">Techniques avancées</h3>
+              <ul>
+                <li>
+                  <i class="fas fa-project-diagram"></i> Imputation des valeurs
+                  manquantes
+                </li>
+                <li>
+                  <i class="fas fa-wave-square"></i> Lissage des séries
+                  temporelles
+                </li>
+                <li><i class="fas fa-random"></i> Augmentation des données</li>
+              </ul>
+
+              <div class="quality-metrics">
+                <div class="metric">
+                  <div class="metric-value" id="completeness">0%</div>
+                  <div class="metric-label">Complétude</div>
+                </div>
+                <div class="metric">
+                  <div class="metric-value" id="consistency">0%</div>
+                  <div class="metric-label">Cohérence</div>
+                </div>
+                <div class="metric">
+                  <div class="metric-value" id="accuracy">0%</div>
+                  <div class="metric-label">Précision</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="cleaning-visual">
+              <div class="cleaning-flow-animation">
+                <div class="raw-node">
+                  <i class="fas fa-database"></i>
+                  <span>Données brutes</span>
+                </div>
+                <div class="cleaning-line"></div>
+                <div class="clean-node">
+                  <i class="fas fa-broom"></i>
+                  <span>Nettoyage</span>
+                </div>
+                <div class="cleaning-line"></div>
+                <div class="processed-node">
+                  <i class="fas fa-check-circle"></i>
+                  <span>Données propres</span>
+                </div>
+              </div>
+
+              <div class="cleaning-log">
+                <h4>Journal de nettoyage</h4>
+                <div class="cleaning-log-container" id="cleaning-log">
+                  <!-- Les logs seront ajoutés dynamiquement -->
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Analysis Page -->
+      <section id="analysis-page" class="page">
+        <div class="container">
+          <button class="back-btn" data-back="pipeline-page">
+            <i class="fas fa-arrow-left"></i> Retour
+          </button>
+
+          <h2 class="section-title">Analyse & Modélisation</h2>
+
+          <div class="analysis-content">
+            <div class="analysis-process">
+              <h3>Notre approche d'analyse prédictive</h3>
+              <div class="process-steps">
+                <div class="process-step">
+                  <i class="fas fa-brain"></i>
+                  <h4>Apprentissage automatique</h4>
+                  <p>
+                    Algorithmes supervisés et non supervisés adaptés à vos
+                    besoins
+                  </p>
+                </div>
+                <div class="process-step">
+                  <i class="fas fa-project-diagram"></i>
+                  <h4>Réseaux de neurones</h4>
+                  <p>Architectures profondes pour les cas complexes</p>
+                </div>
+                <div class="process-step">
+                  <i class="fas fa-chart-bar"></i>
+                  <h4>Analyse des tendances</h4>
+                  <p>Détection des patterns de défaillance émergents</p>
+                </div>
+              </div>
+
+              <h3 style="margin-top: 2rem">Modèles disponibles</h3>
+              <ul>
+                <li><i class="fas fa-random"></i> Forêts aléatoires</li>
+                <li>
+                  <i class="fas fa-network-wired"></i> Réseaux neuronaux LSTM
+                </li>
+                <li><i class="fas fa-chart-line"></i> Régression logistique</li>
+                <li><i class="fas fa-vector-square"></i> SVM</li>
+              </ul>
+
+              <div class="model-metrics">
+                <div class="model-metric">
+                  <div class="model-value" id="model-accuracy">0%</div>
+                  <div class="model-label">Précision</div>
+                </div>
+                <div class="model-metric">
+                  <div class="model-value" id="model-recall">0%</div>
+                  <div class="model-label">Rappel</div>
+                </div>
+                <div class="model-metric">
+                  <div class="model-value" id="model-f1">0%</div>
+                  <div class="model-label">Score F1</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="analysis-visual">
+              <div class="analysis-flow-animation">
+                <div class="data-node">
+                  <i class="fas fa-database"></i>
+                  <span>Données</span>
+                </div>
+                <div class="analysis-line"></div>
+                <div class="model-node">
+                  <i class="fas fa-brain"></i>
+                  <span>Modèle</span>
+                </div>
+                <div class="analysis-line"></div>
+                <div class="prediction-node">
+                  <i class="fas fa-chart-line"></i>
+                  <span>Prédictions</span>
+                </div>
+              </div>
+
+              <div class="model-visualization">
+                <h4>Performance des modèles</h4>
+                <div class="model-graph">
+                  <div
+                    class="model-bar"
+                    style="height: 20%"
+                    data-value="80%"
+                  ></div>
+                  <div
+                    class="model-bar"
+                    style="height: 35%"
+                    data-value="85%"
+                  ></div>
+                  <div
+                    class="model-bar"
+                    style="height: 50%"
+                    data-value="90%"
+                  ></div>
+                  <div
+                    class="model-bar"
+                    style="height: 65%"
+                    data-value="95%"
+                  ></div>
+                  <div
+                    class="model-bar"
+                    style="height: 80%"
+                    data-value="98%"
+                  ></div>
+                </div>
+              </div>
+
+              <div class="model-performance">
+                <h4>Journal d'entraînement</h4>
+                <div class="model-performance-container" id="model-performance">
+                  <!-- Les logs seront ajoutés dynamiquement -->
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Alerts Page -->
+      <section id="alerts-page" class="page">
+        <div class="container">
+          <button class="back-btn" data-back="pipeline-page">
+            <i class="fas fa-arrow-left"></i> Retour
+          </button>
+
+          <h2 class="section-title">Alertes & Recommandations</h2>
+
+          <div class="alerts-content">
+            <div class="alerts-process">
+              <h3>Système intelligent d'alertes</h3>
+              <div class="process-steps">
+                <div class="process-step">
+                  <i class="fas fa-bell"></i>
+                  <h4>Détection précoce</h4>
+                  <p>
+                    Identification des signaux avant-coureurs de défaillance
+                  </p>
+                </div>
+                <div class="process-step">
+                  <i class="fas fa-robot"></i>
+                  <h4>Recommandations IA</h4>
+                  <p>Actions correctives suggérées par notre système expert</p>
+                </div>
+                <div class="process-step">
+                  <i class="fas fa-tasks"></i>
+                  <h4>Gestion des priorités</h4>
+                  <p>Classement des alertes par criticité et impact</p>
+                </div>
+              </div>
+
+              <h3 style="margin-top: 2rem">Types d'alertes</h3>
+              <ul>
+                <li>
+                  <i class="fas fa-thermometer-half"></i> Dérives thermiques
+                </li>
+                <li><i class="fas fa-vibration"></i> Vibrations anormales</li>
+                <li>
+                  <i class="fas fa-tachometer-alt"></i> Performances dégradées
+                </li>
+                <li><i class="fas fa-clock"></i> Maintenance préventive</li>
+              </ul>
+
+              <div class="alert-stats">
+                <div class="alert-stat">
+                  <div class="alert-value" id="alerts-today">0</div>
+                  <div class="alert-label">Aujourd'hui</div>
+                </div>
+                <div class="alert-stat">
+                  <div class="alert-value" id="alerts-critical">0</div>
+                  <div class="alert-label">Critiques</div>
+                </div>
+                <div class="alert-stat">
+                  <div class="alert-value" id="response-time">0</div>
+                  <div class="alert-label">min (moy.)</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="alerts-visual">
+              <div class="alerts-flow-animation">
+                <div class="alert-node">
+                  <i class="fas fa-exclamation-triangle"></i>
+                  <span>Détection</span>
+                </div>
+                <div class="alerts-line"></div>
+                <div class="action-node">
+                  <i class="fas fa-robot"></i>
+                  <span>Recommandation</span>
+                </div>
+                <div class="alerts-line"></div>
+                <div class="resolution-node">
+                  <i class="fas fa-check-circle"></i>
+                  <span>Résolution</span>
+                </div>
+              </div>
+
+              <div class="alerts-feed">
+                <h4>Alertes récentes</h4>
+                <div class="alerts-container" id="alerts-feed">
+                  <!-- Les alertes seront ajoutées dynamiquement -->
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Dashboard Page -->
+      <section id="dashboard-page" class="page">
+        <div class="container">
+          <h2 class="section-title">Tableau de Bord Interactif</h2>
+          <div class="dashboard-container">
+            <div class="dashboard-description">
+              <h3>Visualisez l'état de vos équipements en temps réel</h3>
+              <p>
+                Notre tableau de bord personnalisable vous offre une vue
+                d'ensemble de la santé de vos machines avec des indicateurs clés
+                et des alertes en temps réel.
+              </p>
+              <ul>
+                <li>
+                  <i class="fas fa-check-circle"></i> Surveillance continue 24/7
+                </li>
+                <li>
+                  <i class="fas fa-check-circle"></i> Rapports personnalisables
+                </li>
+                <li>
+                  <i class="fas fa-check-circle"></i> Historique des
+                  défaillances
+                </li>
+                <li>
+                  <i class="fas fa-check-circle"></i> Analyse des tendances
+                </li>
+              </ul>
+            </div>
+            <div class="dashboard-preview">
+              <div class="dashboard-mockup">
+                <div class="gauge-container">
+                  <div class="gauge" id="gauge1"></div>
+                  <p>État général</p>
+                </div>
+                <div class="gauge-container">
+                  <div class="gauge" id="gauge2"></div>
+                  <p>Température</p>
+                </div>
+                <div class="gauge-container">
+                  <div class="gauge" id="gauge3"></div>
+                  <p>Vibration</p>
+                </div>
+                <div class="alert-panel">
+                  <h4>Alertes récentes</h4>
+                  <ul id="alerts-list">
+                    <!-- Alerts will be added by JS -->
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Contact Page -->
+      <section id="contact-page" class="page">
+        <div class="container">
+          <h2 class="section-title">Contactez-nous pour une démonstration</h2>
+          <div class="contact-container">
+            <div class="contact-info">
+              <h3>Nos coordonnées</h3>
+              <p>
+                <i class="fas fa-map-marker-alt"></i> 123 Rue de l'Industrie,
+                75000 Paris
+              </p>
+              <p><i class="fas fa-phone"></i> +33 1 23 45 67 89</p>
+              <p><i class="fas fa-envelope"></i> contact@aimaintenance.com</p>
+              <div class="social-links">
+                <a href="#"><i class="fab fa-linkedin"></i></a>
+                <a href="#"><i class="fab fa-twitter"></i></a>
+                <a href="#"><i class="fab fa-youtube"></i></a>
+              </div>
+            </div>
+            <div class="contact-form">
+              <form id="demo-form">
+                <div class="form-group">
+                  <input
+                    type="text"
+                    id="name"
+                    placeholder="Votre nom"
+                    required
+                  />
+                </div>
+                <div class="form-group">
+                  <input
+                    type="email"
+                    id="email"
+                    placeholder="Votre email"
+                    required
+                  />
+                </div>
+                <div class="form-group">
+                  <input
+                    type="text"
+                    id="company"
+                    placeholder="Votre entreprise"
+                  />
+                </div>
+                <div class="form-group">
+                  <textarea
+                    id="message"
+                    placeholder="Votre message"
+                    rows="4"
+                  ></textarea>
+                </div>
+                <button type="submit" class="btn">Demander une démo</button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+      <div class="container">
+        <div class="footer-content">
+          <div class="footer-logo">
+            <h3><span>AI</span>Maintenance</h3>
+            <p>La solution intelligente pour la maintenance industrielle</p>
+          </div>
+          <div class="footer-links">
+            <h4>Liens rapides</h4>
+            <ul>
+              <li>
+                <a href="#home" class="nav-link" data-page="home-page"
+                  >Accueil</a
+                >
+              </li>
+              <li>
+                <a href="#pipeline" class="nav-link" data-page="pipeline-page"
+                  >Pipeline</a
+                >
+              </li>
+              <li>
+                <a href="#dashboard" class="nav-link" data-page="dashboard-page"
+                  >Tableau de Bord</a
+                >
+              </li>
+              <li>
+                <a href="#contact" class="nav-link" data-page="contact-page"
+                  >Contact</a
+                >
+              </li>
+            </ul>
+          </div>
+          <div class="footer-legal">
+            <h4>Légal</h4>
+            <ul>
+              <li><a href="#">Mentions légales</a></li>
+              <li><a href="#">Confidentialité</a></li>
+              <li><a href="#">CGV</a></li>
+            </ul>
+          </div>
+        </div>
+        <div class="copyright">
+          <p>&copy; 2023 AIMaintenance. Tous droits réservés.</p>
+        </div>
+      </div>
+    </footer>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        // Router System
+        class Router {
+          constructor() {
+            this.pages = document.querySelectorAll(".page");
+            this.navLinks = document.querySelectorAll(".nav-link");
+            this.init();
+          }
+
+          init() {
+            // Show home page by default
+            this.showPage("home-page");
+
+            // Setup event listeners
+            this.navLinks.forEach((link) => {
+              link.addEventListener("click", (e) => {
+                e.preventDefault();
+                const pageId = link.getAttribute("data-page");
+                this.showPage(pageId);
+                this.updateActiveNav(link);
+              });
+            });
+
+            // Handle back buttons
+            document.querySelectorAll("[data-back]").forEach((btn) => {
+              btn.addEventListener("click", () => {
+                const pageId = btn.getAttribute("data-back");
+                this.showPage(pageId);
+              });
+            });
+
+            // Handle step clicks in pipeline
+            document.querySelectorAll(".step").forEach((step) => {
+              step.addEventListener("click", () => {
+                const targetPage = step.getAttribute("data-target");
+                if (targetPage) {
+                  this.showPage(targetPage);
+                }
+              });
+            });
+
+            // Handle hash changes
+            window.addEventListener("hashchange", () => {
+              const hash = window.location.hash.substring(1);
+              const targetLink = document.querySelector(
+                `.nav-link[href="#${hash}"]`
+              );
+              if (targetLink) {
+                const pageId = targetLink.getAttribute("data-page");
+                this.showPage(pageId);
+                this.updateActiveNav(targetLink);
+              }
+            });
+          }
+
+          showPage(pageId) {
+            // Hide all pages
+            this.pages.forEach((page) => {
+              page.classList.remove("active");
+            });
+
+            // Show selected page
+            const activePage = document.getElementById(pageId);
+            if (activePage) {
+              activePage.classList.add("active");
+
+              // Scroll to top
+              window.scrollTo(0, 0);
+
+              // Initialize page specific functionality
+              this.initPage(pageId);
+            }
+          }
+
+          updateActiveNav(activeLink) {
+            // Remove active class from all nav links
+            this.navLinks.forEach((link) => {
+              link.classList.remove("active");
+            });
+
+            // Add active class to clicked link
+            activeLink.classList.add("active");
+
+            // Close mobile menu if open
+            document.querySelector(".nav-links").classList.remove("active");
+            document.querySelector(".burger").classList.remove("toggle");
+          }
+
+          initPage(pageId) {
+            switch (pageId) {
+              case "data-collection-page":
+                this.initDataCollectionPage();
+                break;
+              case "data-cleaning-page":
+                this.initDataCleaningPage();
+                break;
+              case "analysis-page":
+                this.initAnalysisPage();
+                break;
+              case "alerts-page":
+                this.initAlertsPage();
+                break;
+              case "dashboard-page":
+                this.initDashboardPage();
+                break;
+            }
+          }
+
+          initDataCollectionPage() {
+            // Animate statistics
+            this.animateStats();
+
+            // Start data feed
+            this.startDataFeed();
+          }
+
+          initDataCleaningPage() {
+            // Animate quality metrics
+            this.animateQualityMetrics();
+
+            // Start cleaning log
+            this.startCleaningLog();
+          }
+
+          initAnalysisPage() {
+            // Animate model metrics
+            this.animateModelMetrics();
+
+            // Start model performance log
+            this.startModelPerformanceLog();
+
+            // Animate model bars
+            this.animateModelBars();
+          }
+
+          initAlertsPage() {
+            // Animate alert stats
+            this.animateAlertStats();
+
+            // Start alerts feed
+            this.startAlertsFeed();
+          }
+
+          initDashboardPage() {
+            // Initialize dashboard gauges and alerts
+            this.animateGauges();
+            this.generateAlerts();
+
+            // Update dashboard every 5 seconds
+            if (this.dashboardInterval) {
+              clearInterval(this.dashboardInterval);
+            }
+            this.dashboardInterval = setInterval(() => {
+              this.animateGauges();
+              this.generateAlerts();
+            }, 5000);
+          }
+
+          animateStats() {
+            const dataVolume = document.getElementById("data-volume");
+            const sensorCount = document.getElementById("sensor-count");
+            const uptime = document.getElementById("uptime");
+
+            this.animateValue(dataVolume, 0, 42, 2000);
+            this.animateValue(sensorCount, 0, 156, 1500);
+            this.animateValue(uptime, 0, 99.7, 2500);
+          }
+
+          animateQualityMetrics() {
+            const completeness = document.getElementById("completeness");
+            const consistency = document.getElementById("consistency");
+            const accuracy = document.getElementById("accuracy");
+
+            this.animateValue(completeness, 0, 98, 1500, "%");
+            this.animateValue(consistency, 0, 95, 2000, "%");
+            this.animateValue(accuracy, 0, 97, 2500, "%");
+          }
+
+          animateModelMetrics() {
+            const modelAccuracy = document.getElementById("model-accuracy");
+            const modelRecall = document.getElementById("model-recall");
+            const modelF1 = document.getElementById("model-f1");
+
+            this.animateValue(modelAccuracy, 0, 92, 1500, "%");
+            this.animateValue(modelRecall, 0, 89, 2000, "%");
+            this.animateValue(modelF1, 0, 90, 2500, "%");
+          }
+
+          animateAlertStats() {
+            const alertsToday = document.getElementById("alerts-today");
+            const alertsCritical = document.getElementById("alerts-critical");
+            const responseTime = document.getElementById("response-time");
+
+            this.animateValue(alertsToday, 0, 12, 1000);
+            this.animateValue(alertsCritical, 0, 3, 1500);
+            this.animateValue(responseTime, 0, 28, 2000);
+          }
+
+          animateModelBars() {
+            const bars = document.querySelectorAll(".model-bar");
+            bars.forEach((bar, index) => {
+              setTimeout(() => {
+                const targetHeight = bar.getAttribute("data-value");
+                bar.style.height = targetHeight;
+              }, index * 300);
+            });
+          }
+
+          animateValue(element, start, end, duration, suffix = "") {
+            let startTimestamp = null;
+            const step = (timestamp) => {
+              if (!startTimestamp) startTimestamp = timestamp;
+              const progress = Math.min(
+                (timestamp - startTimestamp) / duration,
+                1
+              );
+              const value = progress * (end - start) + start;
+              element.textContent =
+                end === Math.floor(end)
+                  ? Math.floor(value) + suffix
+                  : value.toFixed(1) + suffix;
+              if (progress < 1) {
+                window.requestAnimationFrame(step);
+              }
+            };
+            window.requestAnimationFrame(step);
+          }
+
+          startDataFeed() {
+            const dataFeed = document.getElementById("data-feed");
+            dataFeed.innerHTML = "";
+
+            const sampleData = [
+              "2023-11-15 08:23:45 | Capteur TMP-0042 | Température: 67.3°C",
+              "2023-11-15 08:23:46 | Capteur VIB-0123 | Vibration: 2.7 m/s²",
+              "2023-11-15 08:23:47 | Capteur PRS-0056 | Pression: 3.2 bar",
+              "2023-11-15 08:23:48 | Système | Nouveau capteur détecté: TMP-0043",
+              "2023-11-15 08:23:49 | Capteur TMP-0042 | Température: 67.1°C",
+              "2023-11-15 08:23:50 | Capteur VIB-0123 | Vibration: 2.8 m/s²",
+              "2023-11-15 08:23:51 | Historique | Maintenance préventive planifiée",
+              "2023-11-15 08:23:52 | Capteur PRS-0056 | Pression: 3.3 bar",
+            ];
+
+            // Show existing data
+            sampleData.forEach((data, index) => {
+              setTimeout(() => {
+                this.addDataFeedItem(data);
+              }, index * 800);
+            });
+
+            // Generate new random data
+            const sensors = [
+              { id: "TMP", name: "Température", unit: "°C", min: 65, max: 70 },
+              { id: "VIB", name: "Vibration", unit: "m/s²", min: 2, max: 3 },
+              { id: "PRS", name: "Pression", unit: "bar", min: 3, max: 4 },
+              { id: "HUM", name: "Humidité", unit: "%", min: 30, max: 40 },
+            ];
+
+            if (this.dataFeedInterval) {
+              clearInterval(this.dataFeedInterval);
+            }
+
+            this.dataFeedInterval = setInterval(() => {
+              const sensor =
+                sensors[Math.floor(Math.random() * sensors.length)];
+              const value = (
+                Math.random() * (sensor.max - sensor.min) +
+                sensor.min
+              ).toFixed(1);
+              const timestamp = new Date()
+                .toISOString()
+                .replace("T", " ")
+                .substring(0, 19);
+              const data = `${timestamp} | Capteur ${sensor.id}-${Math.floor(
+                Math.random() * 100
+              )
+                .toString()
+                .padStart(4, "0")} | ${sensor.name}: ${value}${sensor.unit}`;
+              this.addDataFeedItem(data);
+            }, 3000);
+          }
+
+          startCleaningLog() {
+            const cleaningLog = document.getElementById("cleaning-log");
+            cleaningLog.innerHTML = "";
+
+            const sampleLogs = [
+              "2023-11-15 08:24:00 | Nettoyage | 142 valeurs manquantes imputées",
+              "2023-11-15 08:24:05 | Filtrage | 23 points de bruit supprimés",
+              "2023-11-15 08:24:10 | Normalisation | Données mises à l'échelle [0-1]",
+              "2023-11-15 08:24:15 | Validation | 98.7% des données valides",
+              "2023-11-15 08:24:20 | Export | Données prêtes pour l'analyse",
+            ];
+
+            // Show existing logs
+            sampleLogs.forEach((log, index) => {
+              setTimeout(() => {
+                this.addCleaningLogItem(log);
+              }, index * 800);
+            });
+
+            // Generate new random logs
+            const logTypes = [
+              {
+                action: "Nettoyage",
+                messages: [
+                  "valeurs manquantes imputées",
+                  "doublons supprimés",
+                  "valeurs aberrantes corrigées",
+                ],
+              },
+              {
+                action: "Filtrage",
+                messages: [
+                  "points de bruit supprimés",
+                  "signal lissé",
+                  "filtre passe-bas appliqué",
+                ],
+              },
+              {
+                action: "Normalisation",
+                messages: [
+                  "données mises à l'échelle",
+                  "standardisation effectuée",
+                  "normalisation MinMax",
+                ],
+              },
+              {
+                action: "Validation",
+                messages: [
+                  "données valides",
+                  "intégrité vérifiée",
+                  "cohérence confirmée",
+                ],
+              },
+            ];
+
+            if (this.cleaningLogInterval) {
+              clearInterval(this.cleaningLogInterval);
+            }
+
+            this.cleaningLogInterval = setInterval(() => {
+              const logType =
+                logTypes[Math.floor(Math.random() * logTypes.length)];
+              const message =
+                logType.messages[
+                  Math.floor(Math.random() * logType.messages.length)
+                ];
+              const count = Math.floor(Math.random() * 100) + 1;
+              const timestamp = new Date()
+                .toISOString()
+                .replace("T", " ")
+                .substring(0, 19);
+              const log = `${timestamp} | ${logType.action} | ${count} ${message}`;
+              this.addCleaningLogItem(log);
+            }, 4000);
+          }
+
+          startModelPerformanceLog() {
+            const modelPerformance =
+              document.getElementById("model-performance");
+            modelPerformance.innerHTML = "";
+
+            const sampleLogs = [
+              "2023-11-15 08:25:00 | Entraînement | Modèle Random Forest initialisé",
+              "2023-11-15 08:25:05 | Entraînement | Accuracy: 82.3% (epoch 1)",
+              "2023-11-15 08:25:10 | Entraînement | Accuracy: 87.6% (epoch 5)",
+              "2023-11-15 08:25:15 | Validation | Score F1: 0.89",
+              "2023-11-15 08:25:20 | Export | Modèle enregistré pour déploiement",
+            ];
+
+            // Show existing logs
+            sampleLogs.forEach((log, index) => {
+              setTimeout(() => {
+                this.addModelPerformanceItem(log);
+              }, index * 800);
+            });
+
+            // Generate new random logs
+            const modelTypes = [
+              "Random Forest",
+              "LSTM",
+              "Regression Logistique",
+              "SVM",
+              "XGBoost",
+            ];
+            const metrics = [
+              "Accuracy",
+              "Precision",
+              "Recall",
+              "F1 Score",
+              "AUC",
+            ];
+
+            if (this.modelPerformanceInterval) {
+              clearInterval(this.modelPerformanceInterval);
+            }
+
+            this.modelPerformanceInterval = setInterval(() => {
+              const model =
+                modelTypes[Math.floor(Math.random() * modelTypes.length)];
+              const metric =
+                metrics[Math.floor(Math.random() * metrics.length)];
+              const value = (Math.random() * 20 + 80).toFixed(1);
+              const timestamp = new Date()
+                .toISOString()
+                .replace("T", " ")
+                .substring(0, 19);
+              const log = `${timestamp} | ${model} | ${metric}: ${value}${
+                metric === "F1 Score" ? "" : "%"
+              }`;
+              this.addModelPerformanceItem(log);
+            }, 3500);
+          }
+
+          startAlertsFeed() {
+            const alertsFeed = document.getElementById("alerts-feed");
+            alertsFeed.innerHTML = "";
+
+            const sampleAlerts = [
+              "2023-11-15 08:26:00 | CRITIQUE | Température moteur #4: 112°C",
+              "2023-11-15 08:26:05 | AVERTISSEMENT | Vibration pompe #2: 4.2 m/s²",
+              "2023-11-15 08:26:10 | INFO | Maintenance préventive convoyeur B",
+              "2023-11-15 08:26:15 | CRITIQUE | Pression compresseur: 8.7 bar",
+              "2023-11-15 08:26:20 | AVERTISSEMENT | Niveau huile turbine #3 bas",
+            ];
+
+            // Show existing alerts
+            sampleAlerts.forEach((alert, index) => {
+              setTimeout(() => {
+                this.addAlertItem(alert);
+              }, index * 800);
+            });
+
+            // Generate new random alerts
+            const alertLevels = ["CRITIQUE", "AVERTISSEMENT", "INFO"];
+            const alertTypes = [
+              { type: "Température", unit: "°C", min: 70, max: 120 },
+              { type: "Vibration", unit: "m/s²", min: 2, max: 5 },
+              { type: "Pression", unit: "bar", min: 3, max: 9 },
+              { type: "Niveau huile", unit: "%", min: 10, max: 30 },
+              { type: "Courant", unit: "A", min: 15, max: 25 },
+            ];
+            const equipment = [
+              "moteur #",
+              "pompe #",
+              "compresseur",
+              "turbine #",
+              "convoyeur ",
+            ];
+
+            if (this.alertsFeedInterval) {
+              clearInterval(this.alertsFeedInterval);
+            }
+
+            this.alertsFeedInterval = setInterval(() => {
+              const level =
+                alertLevels[Math.floor(Math.random() * alertLevels.length)];
+              const alertType =
+                alertTypes[Math.floor(Math.random() * alertTypes.length)];
+              const equip =
+                equipment[Math.floor(Math.random() * equipment.length)];
+              const equipNum = equip.endsWith("#")
+                ? Math.floor(Math.random() * 10) + 1
+                : "";
+              const value = (
+                Math.random() * (alertType.max - alertType.min) +
+                alertType.min
+              ).toFixed(1);
+              const timestamp = new Date()
+                .toISOString()
+                .replace("T", " ")
+                .substring(0, 19);
+              const alert = `${timestamp} | ${level} | ${alertType.type} ${equip}${equipNum}: ${value}${alertType.unit}`;
+              this.addAlertItem(alert);
+            }, 3000);
+          }
+
+          addDataFeedItem(text) {
+            const dataFeed = document.getElementById("data-feed");
+            const item = document.createElement("div");
+            item.className = "data-feed-item";
+            item.textContent = text;
+            dataFeed.appendChild(item);
+            dataFeed.scrollTop = dataFeed.scrollHeight;
+
+            // Limit to 50 items max
+            if (dataFeed.children.length > 50) {
+              dataFeed.removeChild(dataFeed.children[0]);
+            }
+          }
+
+          addCleaningLogItem(text) {
+            const cleaningLog = document.getElementById("cleaning-log");
+            const item = document.createElement("div");
+            item.className = "cleaning-log-item";
+            item.textContent = text;
+            cleaningLog.appendChild(item);
+            cleaningLog.scrollTop = cleaningLog.scrollHeight;
+
+            // Limit to 30 items max
+            if (cleaningLog.children.length > 30) {
+              cleaningLog.removeChild(cleaningLog.children[0]);
+            }
+          }
+
+          addModelPerformanceItem(text) {
+            const modelPerformance =
+              document.getElementById("model-performance");
+            const item = document.createElement("div");
+            item.className = "model-performance-item";
+            item.textContent = text;
+            modelPerformance.appendChild(item);
+            modelPerformance.scrollTop = modelPerformance.scrollHeight;
+
+            // Limit to 30 items max
+            if (modelPerformance.children.length > 30) {
+              modelPerformance.removeChild(modelPerformance.children[0]);
+            }
+          }
+
+          addAlertItem(text) {
+            const alertsFeed = document.getElementById("alerts-feed");
+            const item = document.createElement("div");
+            item.className = "alert-item";
+
+            // Color code based on alert level
+            if (text.includes("CRITIQUE")) {
+              item.style.color = "var(--danger-color)";
+            } else if (text.includes("AVERTISSEMENT")) {
+              item.style.color = "var(--warning-color)";
+            }
+
+            item.textContent = text;
+            alertsFeed.appendChild(item);
+            alertsFeed.scrollTop = alertsFeed.scrollHeight;
+
+            // Limit to 30 items max
+            if (alertsFeed.children.length > 30) {
+              alertsFeed.removeChild(alertsFeed.children[0]);
+            }
+          }
+
+          animateGauges() {
+            const gauges = document.querySelectorAll(".gauge");
+
+            gauges.forEach((gauge, index) => {
+              // Reset to 0
+              gauge.style.background =
+                "conic-gradient(var(--success-color) 0% 0%, var(--warning-color) 0% 0%, var(--danger-color) 0% 100%)";
+
+              // Animate to random value
+              setTimeout(() => {
+                const value1 = Math.floor(Math.random() * 70) + 10;
+                const value2 = Math.floor(Math.random() * 15) + value1;
+
+                gauge.style.background = `conic-gradient(
+                                var(--success-color) 0% ${value1}%, 
+                                var(--warning-color) ${value1}% ${value2}%, 
+                                var(--danger-color) ${value2}% 100%
+                            )`;
+              }, index * 300);
+            });
+          }
+
+          generateAlerts() {
+            const alerts = [
+              "Température élevée sur le moteur #4",
+              "Vibration anormale détectée sur la pompe #2",
+              "Pression critique sur le compresseur principal",
+              "Maintenance préventive requise pour le convoyeur B",
+              "Niveau d'huile bas sur la turbine #3",
+            ];
+
+            const alertsList = document.getElementById("alerts-list");
+            alertsList.innerHTML = "";
+
+            // Show 2-3 random alerts
+            const numAlerts = Math.floor(Math.random() * 2) + 2;
+            const shuffledAlerts = alerts.sort(() => 0.5 - Math.random());
+
+            for (let i = 0; i < numAlerts; i++) {
+              const li = document.createElement("li");
+              li.textContent = shuffledAlerts[i];
+              alertsList.appendChild(li);
+            }
+          }
+        }
+
+        // Initialize router
+        const router = new Router();
+
+        // Mobile Navigation
+        const burger = document.querySelector(".burger");
+        const navLinks = document.querySelector(".nav-links");
+
+        burger.addEventListener("click", () => {
+          // Toggle Nav
+          navLinks.classList.toggle("active");
+
+          // Burger Animation
+          burger.classList.toggle("toggle");
+        });
+
+        // Navbar Scroll Effect
+        window.addEventListener("scroll", function () {
+          const navbar = document.getElementById("navbar");
+          if (window.scrollY > 100) {
+            navbar.classList.add("scrolled");
+          } else {
+            navbar.classList.remove("scrolled");
+          }
+        });
+
+        // Hero Image Animation
+        const heroImg = document.getElementById("hero-img");
+        if (heroImg) {
+          // Change image source on hover
+          heroImg.addEventListener("mouseenter", () => {
+            heroImg.src = "https://via.placeholder.com/600x400/3498db/ffffff";
+          });
+
+          heroImg.addEventListener("mouseleave", () => {
+            heroImg.src = "https://via.placeholder.com/600x400";
+          });
+        }
+
+        // Contact Form Submission
+        const contactForm = document.getElementById("demo-form");
+        if (contactForm) {
+          contactForm.addEventListener("submit", function (e) {
+            e.preventDefault();
+
+            // Get form values
+            const name = document.getElementById("name").value;
+            const email = document.getElementById("email").value;
+            const company = document.getElementById("company").value;
+            const message = document.getElementById("message").value;
+
+            // Here you would typically send the data to a server
+            console.log("Form submitted:", { name, email, company, message });
+
+            // Show success message
+            alert(
+              `Merci ${name}, votre demande de démonstration a été envoyée. Nous vous contacterons bientôt à l'adresse ${email}.`
+            );
+
+            // Reset form
+            contactForm.reset();
+          });
+        }
+      });
+    </script>
+  </body>
+</html>
